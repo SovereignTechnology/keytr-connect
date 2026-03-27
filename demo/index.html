@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>keytr-connect demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    header {
+      background: #111;
+      border-bottom: 1px solid #222;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 { font-size: 1.2rem; color: #fff; }
+    header h1 span { color: #7c5cff; }
+    #user-info { font-size: 0.85rem; color: #888; }
+    #btn-logout {
+      background: none;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      display: none;
+    }
+    #btn-logout:hover { border-color: #e44; color: #e44; }
+
+    main { max-width: 640px; margin: 0 auto; padding: 1.5rem; }
+
+    /* Auth section */
+    #auth-section { margin-top: 2rem; }
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid #333;
+      margin-bottom: 1.5rem;
+    }
+    .tab {
+      padding: 0.6rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      color: #888;
+      font-size: 0.9rem;
+    }
+    .tab.active { color: #7c5cff; border-bottom-color: #7c5cff; }
+    .tab:hover { color: #fff; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 0.3rem; }
+    input, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    input:focus, textarea:focus { outline: none; border-color: #7c5cff; }
+    textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+
+    .btn {
+      background: #7c5cff;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      width: 100%;
+    }
+    .btn:hover { background: #6a4ce0; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* App section (post-login) */
+    #app-section { display: none; margin-top: 1.5rem; }
+
+    .profile-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .profile-card .npub {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #7c5cff;
+      word-break: break-all;
+    }
+    .profile-card .hex {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #666;
+      word-break: break-all;
+      margin-top: 0.3rem;
+    }
+
+    #compose { margin-bottom: 1.5rem; }
+    #compose h3 { font-size: 0.95rem; margin-bottom: 0.8rem; color: #ccc; }
+
+    #feed h3 { font-size: 0.95rem; margin-bottom: 0.8rem; color: #ccc; }
+    .note {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .note .author {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #7c5cff;
+    }
+    .note .content { margin-top: 0.4rem; font-size: 0.9rem; white-space: pre-wrap; }
+    .note .time { font-size: 0.7rem; color: #555; margin-top: 0.3rem; }
+
+    /* Status/log */
+    #status {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111;
+      border-top: 1px solid #222;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: #888;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    #status .entry { padding: 0.15rem 0; }
+    #status .success { color: #4caf50; }
+    #status .error { color: #e44; }
+
+    .hidden { display: none !important; }
+
+    #prf-warning {
+      background: #2a1a00;
+      border: 1px solid #553300;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      color: #ffaa33;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><span>keytr</span>-connect demo</h1>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <span id="user-info"></span>
+      <button id="btn-logout">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="prf-warning" class="hidden"></div>
+
+    <!-- Auth Section -->
+    <section id="auth-section">
+      <div class="tab-bar">
+        <div class="tab active" data-tab="signup">Create Account</div>
+        <div class="tab" data-tab="login">Login</div>
+      </div>
+
+      <div id="tab-signup" class="tab-panel active">
+        <label for="signup-name">Display Name</label>
+        <input id="signup-name" type="text" placeholder="Alice" />
+        <label for="signup-username">Username</label>
+        <input id="signup-username" type="text" placeholder="alice" />
+        <button id="btn-signup" class="btn">Create Account with Passkey</button>
+      </div>
+
+      <div id="tab-login" class="tab-panel">
+        <label for="login-npub">Your npub (or hex pubkey)</label>
+        <input id="login-npub" type="text" placeholder="npub1..." />
+        <p style="font-size: 0.8rem; color: #666; margin: -0.5rem 0 1rem;">
+          Leave blank to use cached pubkey from last session.
+        </p>
+        <button id="btn-login" class="btn">Login with Passkey</button>
+      </div>
+    </section>
+
+    <!-- App Section (shown after login) -->
+    <section id="app-section">
+      <div class="profile-card">
+        <div class="npub" id="profile-npub"></div>
+        <div class="hex" id="profile-hex"></div>
+      </div>
+
+      <div id="compose">
+        <h3>Post a note</h3>
+        <textarea id="note-content" placeholder="What's on your mind?"></textarea>
+        <button id="btn-post" class="btn">Sign &amp; Publish</button>
+      </div>
+
+      <div id="feed">
+        <h3>Recent notes</h3>
+        <div id="feed-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="status"></div>
+
+  <script type="module" src="./app.ts"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+{
+  "name": "@sovit.xyz/keytr-connect",
+  "version": "0.1.0",
+  "description": "Drop-in window.nostr provider and NDK signer powered by keytr passkeys. NIP-07 compatible.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./ndk": {
+      "types": "./dist/ndk-signer.d.ts",
+      "import": "./dist/ndk-signer.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build",
+    "dev": "vite demo",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "nostr",
+    "passkey",
+    "webauthn",
+    "nip-07",
+    "window.nostr",
+    "ndk",
+    "signer",
+    "keytr"
+  ],
+  "author": "sovITxyz",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sovITxyz/keytr-connect.git"
+  },
+  "homepage": "https://github.com/sovITxyz/keytr-connect",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "@sovit.xyz/keytr": "^0.1.1",
+    "nostr-tools": "^2.12.0"
+  },
+  "peerDependencies": {
+    "@nostr-dev-kit/ndk": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@nostr-dev-kit/ndk": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@nostr-dev-kit/ndk": "^3.0.3",
+    "typescript": "^5.7.0",
+    "vite": "^6.2.0"
+  }
+}
