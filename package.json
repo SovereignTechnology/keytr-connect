@@ -36,12 +36,12 @@
     "signer",
     "keytr"
   ],
-  "author": "sovITxyz",
+  "author": "Sovereign Technology (https://www.sovtech.pro/)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sovITxyz/keytr-connect.git"
+    "url": "git+https://github.com/SovereignTechnology/keytr-connect.git"
   },
-  "homepage": "https://github.com/sovITxyz/keytr-connect",
+  "homepage": "https://github.com/SovereignTechnology/keytr-connect",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@sovit.xyz/keytr": "^0.1.1",
